@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,7 +43,15 @@ INSTALLED_APPS = [
     'authapp',
     'basketapp',
     'adminapp',
+    'social_django',
 ]
+
+# Django Crispy Forms
+# Official docs | https://django-crispy-forms.readthedocs.io/en/latest/
+# Tutorial (ru) | https://django.fun/tutorials/django-i-formy-bootstrap-4/
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 ROOT_URLCONF = 'shop.urls'
@@ -68,7 +78,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'mainapp.context_processors.basket'
+                'mainapp.context_processors.basket',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect'
             ],
         },
     },
@@ -164,3 +176,44 @@ EMAIL_HOST_PASSWORD = 'geekshop'
 # Email as files
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'tmp/email-messages/'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+)
+
+SOCIAL_AUTH_URL_NAMESPACE = "social"
+
+# Load settings from file
+with open('.secrets/vk.json', 'r') as f:
+    VK = json.load(f)
+
+with open('.secrets/google.json', 'r') as f:
+    GOOGLE = json.load(f)
+
+SOCIAL_AUTH_VK_OAUTH2_SECRET = VK["SOCIAL_AUTH_VK_OAUTH2_SECRET"]
+SOCIAL_AUTH_VK_OAUTH2_KEY = VK["SOCIAL_AUTH_VK_OAUTH2_KEY"]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
+
+LOGIN_ERROR_URL = "/"
+
+SOCIAL_AUTH_VK_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+
+# Full list of scope here:
+# https://vk.com/dev/permissions
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ["email"]
+
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.auth_allowed",
+    "social_core.pipeline.social_auth.social_user",
+    "social_core.pipeline.user.create_user",
+    "authapp.pipeline.save_user_profile",
+    "social_core.pipeline.social_auth.associate_user",
+    "social_core.pipeline.social_auth.load_extra_data",
+    "social_core.pipeline.user.user_details",
+)
