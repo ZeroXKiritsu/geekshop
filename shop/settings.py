@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'mainapp',
     'authapp',
     'basketapp',
     'adminapp',
     'social_django',
+    'ordersapp',
 ]
 
 # Django Crispy Forms
@@ -61,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'shop.urls'
@@ -76,11 +78,12 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'mainapp.context_processors.basket',
                 'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect'
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
