@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from django.shortcuts import get_object_or_404
 from mainapp.models import Product
 # Create your models here.
 class Order(models.Model):
@@ -62,3 +62,7 @@ class OrderItem(models.Model):
 
     def get_product_cost(self):
         return self.product.price * self.quantity
+
+    @staticmethod
+    def get_item(pk):
+        return get_object_or_404(OrderItem, pk=pk)
