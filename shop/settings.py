@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'r88o1*zk1l+nvx83mvyqqei=tk2gdaolu9yx#+=ld66$d25z)e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -94,11 +94,11 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'geekshop',
+        'USER': 'postgres',
     }
 }
 
@@ -192,14 +192,8 @@ SOCIAL_AUTH_URL_NAMESPACE = "social"
 with open('.secrets/vk.json', 'r') as f:
     VK = json.load(f)
 
-with open('.secrets/google.json', 'r') as f:
-    GOOGLE = json.load(f)
-
 SOCIAL_AUTH_VK_OAUTH2_SECRET = VK["SOCIAL_AUTH_VK_OAUTH2_SECRET"]
 SOCIAL_AUTH_VK_OAUTH2_KEY = VK["SOCIAL_AUTH_VK_OAUTH2_KEY"]
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
 
 LOGIN_ERROR_URL = "/"
 
