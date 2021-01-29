@@ -217,6 +217,5 @@ fabric.properties
 # shop --->
 
 tmp
-.secrets
 
 # <--- shop
