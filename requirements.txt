@@ -1,5 +1,6 @@
 psycopg2-binary
 pillow
 django
+django-crispy-forms
 social_auth_app_django
 requests
