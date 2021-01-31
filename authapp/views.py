@@ -6,6 +6,7 @@ from django.shortcuts import HttpResponseRedirect, render
 from django.urls import reverse
 from authapp.forms import ShopUserEditForm, ShopUserLoginForm, ShopUserProfileEditForm, ShopUserRegisterForm
 from authapp.models import ShopUser
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def login(request):
@@ -51,6 +52,7 @@ def register(request):
         content = {"title": title, "register_form": register_form}
         return render(request, "authapp/register.html", content)
 
+@login_required
 @transaction.atomic
 def edit(request):
     title = "редактирование"
