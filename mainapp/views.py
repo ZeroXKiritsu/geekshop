@@ -18,7 +18,8 @@ def main(request):
 
 def get_hot_product_list():
     products = Product.objects.filter(is_active=True, category__is_active=True).select_related("category")
-    hot_product = random.sample(list(products), 1)[0]
+    product_list = [products]
+    hot_product = random.sample(product_list, 1)[0]
     hot_list = products.exclude(pk=hot_product.pk)[:3]
     return (hot_product, hot_list)
 
