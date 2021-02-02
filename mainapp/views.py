@@ -16,12 +16,13 @@ def main(request):
     content = {"title": title, "products": products, "media_url": settings.MEDIA_URL}
     return render(request, "mainapp/index.html", content)
 
-def get_hot_product_list():
-    products = Product.objects.filter(is_active=True, category__is_active=True).select_related("category")
-    product_list = [products]
-    hot_product = random.sample(product_list, 1)[0]
-    hot_list = products.exclude(pk=hot_product.pk)[:3]
-    return (hot_product, hot_list)
+def get_hot_product():
+    products = Product.objects.filter(is_active=True, category__is_active=True)
+    return random.sample(list(products), 1)[0]
+
+def get_same_products(hot_product):
+    same_products = Product.objects.filter(category=hot_product.category, is_active=True).exclude(pk=hot_product.pk)[:3]
+    return same_products
 
 def products(request, pk=None, page=1):
     title = "продукты"
@@ -54,7 +55,8 @@ def products(request, pk=None, page=1):
             "media_url": settings.MEDIA_URL,
         }
         return render(request, "mainapp/products_list.html", content)
-    hot_product, same_products = get_hot_product_list()
+    hot_product = get_hot_product()
+    same_products = get_same_products(hot_product)
     content = {
         "title": title,
         "links_menu": links_menu,
