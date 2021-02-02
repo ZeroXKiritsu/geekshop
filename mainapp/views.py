@@ -1,5 +1,5 @@
-import os, json
-from random import sample
+import random
+
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, render
@@ -18,7 +18,7 @@ def main(request):
 
 def get_hot_product_list():
     products = Product.objects.filter(is_active=True, category__is_active=True).select_related("category")
-    hot_product = sample(list(products), 1)[0]
+    hot_product = random.sample(list(products), 1)[0]
     hot_list = products.exclude(pk=hot_product.pk)[:3]
     return (hot_product, hot_list)
 
