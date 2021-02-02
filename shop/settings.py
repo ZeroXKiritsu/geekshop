@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'adminapp',
     'social_django',
     'ordersapp',
-    'django_extensions'
 ]
 
 # Django Crispy Forms
