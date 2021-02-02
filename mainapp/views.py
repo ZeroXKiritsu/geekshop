@@ -46,7 +46,6 @@ def products(request, pk=None, page=1):
         except EmptyPage:
             products_paginator = paginator.page(paginator.num_pages)
 
-
         content = {
             "title": title,
             "links_menu": links_menu,
