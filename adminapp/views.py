@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
+from django.db import connection
 
 from adminapp.forms import ProductCategoryEditForm, ProductEditForm, ShopUserAdminEditForm
 from authapp.forms import ShopUserRegisterForm
@@ -13,6 +17,21 @@ from authapp.models import ShopUser
 from mainapp.models import Product, ProductCategory
 
 # Create your views here.
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}:')
+    [print(query['sql']) for query in update_queries]
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        if instance.is_active:
+            instance.product_set.update(is_active=True)
+        else:
+            instance.product_set.update(is_active=False)
+
+        db_profile_by_type(sender, 'UPDATE', connection.queries)
+
 @user_passes_test(lambda u: u.is_superuser)
 def admin_main(request):
     response = redirect("admin:users")
@@ -91,12 +110,22 @@ class ProductCategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductCategory
     template_name = 'adminapp/category_update.html'
     success_url = reverse_lazy('admin:categories')
+    form_class = ProductCategoryEditForm
     fields = '__all__'
 
     def get_context_data(self, **kwargs):
-        context = super(ProductCategoryUpdateView, self).get_context_data()
+        context = super().get_context_data()
         context['title'] = 'категория/редактирования'
         return context
+
+    def form_valid(self, form):
+        if 'discount' in form.cleaned_data:
+            discount = form.cleaned_data['discount']
+            if discount:
+                self.object.product_set.update(price=F('price') * (1 - discount / 100))
+                db_profile_by_type(self.__class__, 'UPDATE', connection.queries)
+
+        return super().form_valid()
 
 
 class ProductCategoryDeleteView(LoginRequiredMixin, DeleteView):
